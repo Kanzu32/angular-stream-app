@@ -1,5 +1,5 @@
-/stream-app/.angular
-/stream-app/.vscode
-/stream-app/node_modules
-/stream-app/input
-/stream-app/recorded
+/stream-app/.angular/
+/stream-app/.vscode/
+/stream-app/node_modules/
+/stream-app/input/
+/stream-app/recorded/
