@@ -1,7 +1,3 @@
-vg-player {
-    justify-content: center;
-}
-
 * {
     margin: 0;
     padding: 0;
@@ -10,18 +6,51 @@ vg-player {
 
 .left {
     float: left;
-    width: 50%;
+    width: calc(50% - 10px);
     margin-top: 20px;
 }
 
 .right {
     float: right;
-    width: 50%;
+    width: calc(50% - 10px); 
     margin-top: 20px;
 }
 
 body {
     background-color: #bdcbd2; /* Светло-серый фон */
+}
+
+@media (max-width: 1200px) {
+    .video-read-container {
+        flex-direction: column;
+        align-items: flex-start;
+
+        .main-button {
+            flex: none;
+            width: 100%;
+            max-width: calc(100% - 10px);
+            margin-bottom: 10px;
+        }
+    }
+
+    .read-param-box {
+        margin: 20px 20px; 
+    }
+
+    .file-box {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .main-button, input[type="text"] {
+        flex: none;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .separator {
+        display: none; 
+    }
 }
 
 .crop-box {
@@ -52,7 +81,6 @@ body {
         }
     }
 }
-
 
 .file-box {
     display: flex;
@@ -89,7 +117,9 @@ body {
 
 .video-read-container {
     display: flex; 
-    align-items: start; 
+    align-items: start;
+    margin-top: 20px;
+    width: calc(95% - 15px);
 }
     
 .read-param-box {
@@ -97,10 +127,9 @@ body {
     flex-direction: column;
     max-width: 200px;
     padding: 5px;
-    border: 2px solid #4a8af4; 
+    border: 2px solid #4a8af4;
     border-radius: 5px; 
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); 
-    margin: 0px 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .form-line {

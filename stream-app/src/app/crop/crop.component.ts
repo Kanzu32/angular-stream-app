@@ -13,7 +13,6 @@ import { ApiService } from '../services/api.service';
 export class CropComponent {
     filesList = ""
     videoSource = ""
-    downloadLink = ""
     currentFileName = ""
 
     @ViewChild(VideoComponent) childVideoComponent:VideoComponent;
@@ -52,7 +51,6 @@ export class CropComponent {
     handleLoadVideo() {
         this.currentFileName = this.fileName.value;
         this.videoSource = "http://127.0.0.1:5000/recorded/" + this.currentFileName
-        this.downloadLink = "http://127.0.0.1:5000/download/" + this.currentFileName
         this.childVideoComponent.changeSource(this.videoSource);
         console.log("Video Source: ", this.videoSource);
     }

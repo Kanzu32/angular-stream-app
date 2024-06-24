@@ -1,31 +1,29 @@
-<div class="left">
-    <div class="video-read-container">
-        <div class="video-window">
-            <app-stream></app-stream>
-        </div>
-        <form [formGroup]="readForm" (ngSubmit)="handleSubmit()">
-            <div class="read-param-box">
-                <div class="form-line">
-                    <span>Address: </span><input type="text" formControlName="address">
-                </div>
-                <div class="form-line">
-                    <span>File name: </span><input type="text" formControlName="name">
-                </div>
-                <div class="form-line">
-                    <span>Format: </span>
-                    <select formControlName="format">
-                        <option value="mp4">mp4</option>
-                        <option value="mkv">mkv</option>
-                        <option value="ts">ts</option>
-                    </select>
-                </div>
-                <div class="form-line">
-                    <span>Resolution: </span><input type="text" formControlName="resolution">
-                </div>
-                <button class="main-button" type="submit" [disabled]="!readForm.valid">START RECORD</button>
-                <button class="main-button" type="button" (click)="endRecord()">END RECORD</button>
-            </div>
-        </form>
+
+<div class="video-read-container">
+    <div class="video-window">
+        <app-stream></app-stream>
     </div>
+    <form [formGroup]="readForm" (ngSubmit)="handleSubmit()">
+        <div class="read-param-box">
+            <div class="form-line">
+                <span>Address: </span><input type="text" formControlName="address">
+            </div>
+            <div class="form-line">
+                <span>File name: </span><input type="text" formControlName="name">
+            </div>
+            <div class="form-line">
+                <span>Format: </span>
+                <select formControlName="format">
+                    <option value="mp4">mp4</option>
+                    <option value="mkv">mkv</option>
+                    <option value="ts">ts</option>
+                </select>
+            </div>
+            <div class="form-line">
+                <span>Resolution: </span><input type="text" formControlName="resolution">
+            </div>
+            <button class="main-button" type="submit" [disabled]="!readForm.valid">START RECORD</button>
+            <button class="main-button" type="button" (click)="endRecord()">END RECORD</button>
+        </div>
+    </form>
 </div>
-<div class="right"></div>

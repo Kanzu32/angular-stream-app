@@ -29,7 +29,6 @@ export class StreamComponent {
             () => {
                 // Set the video to the beginning
                 this.api.getDefaultMedia().currentTime = 0;
-                this.api.playbackRate = 1;
             }
         );
     }

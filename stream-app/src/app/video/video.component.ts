@@ -16,6 +16,7 @@ export class VideoComponent {
     preload: string = 'auto';
     api: VgApiService;
     videoSource = ""
+    //streamSource = "http://127.0.0.1:5000/stream"
     constructor() {}
 
     changeSource(newSource: string) {
