@@ -31,9 +31,11 @@ def record_start():
     print(address, name, out_format, out_resolution)
     record_process.terminate()
     record_process = subprocess.Popen(["ffmpeg", "-y", "-i", f"udp://{address}?overrun_nonfatal=1&fifo_size=50000000",
-                                       "-s", f"{out_resolution}", "-c:v", "libx264", f"./recorded/{name}.{out_format}",
-                                       "-c:v", "libx264", "-pix_fmt", "yuv420p", "-f", "dash", "-seg_duration", "1",
-                                       "-streaming", "1", "-window_size", "30", "-remove_at_exit", "1", "live.mpd"],
+                                       "-s", f"{out_resolution}", "-c:v", "libx264",
+                                       "-profile", "main", "-level", "4.1", "-pix_fmt", "yuv420p",
+                                       f"./recorded/{name}.{out_format}", "-c:v", "libx264", "-pix_fmt", "yuv420p",
+                                       "-f", "dash", "-seg_duration", "1", "-streaming", "1", "-window_size", "30",
+                                       "-remove_at_exit", "1", "live.mpd"],
                                       creationflags=subprocess.CREATE_NEW_PROCESS_GROUP, stdin=subprocess.PIPE,)
 
     #os.system(f"ffmpeg -y -i \"udp://{address}?overrun_nonfatal=1&fifo_size=50000000\" -s {out_resolution} -c:v libx264 {name}.{out_format} -c:v copy -f mpegts pipe:1|ffplay -i -x 500 pipe:0")
@@ -105,8 +107,7 @@ def video_recorded(filename):
         print(file_path)
         if os.path.isfile(file_path):
             if filename.split(".")[-1] == "ts":
-                os.system(f"ffmpeg -y -i ./recorded/{filename} -vcodec libx264 -pix_fmt yuv420p ./recorded/{filename}.mp4")
-                return send_file(file_path+".mp4", as_attachment=True)
+                return send_file(file_path, mimetype="video/mp2t", as_attachment=True)
             return send_file(file_path, as_attachment=True)
         else:
             return make_response(f"File '{filename}' not found.", 404)

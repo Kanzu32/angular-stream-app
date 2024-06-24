@@ -4,3 +4,5 @@
 /ffmpeg_stream/recorded
 /ffmpeg_stream/input
 /ffmpeg_stream/ffmpeg
+*.m4s
+*.tmp
