@@ -1,5 +1,6 @@
 /stream-app/.angular/
 /stream-app/.vscode/
 /stream-app/node_modules/
-/stream-app/input/
-/stream-app/recorded/
+/ffmpeg_stream/recorded
+/ffmpeg_stream/input
+/ffmpeg_stream/ffmpeg

@@ -1,0 +1,17 @@
+ffmpeg -i anime.mkv -c:v libx264 -preset ultrafast -tune zerolatency -f mpegts udp://127.0.0.1:1234
+
+ffplay udp://127.0.0.1:1234
+
+ffmpeg -i udp://{ADDRESS} -s {OUT_RESOLUTION} -c:v libx264 {OUT_NAME}.{OUT_FORMAT}
+
+ffmpeg -i udp://{ADDRESS} -s {OUT_RESOLUTION} -c:v libx264 {OUT_NAME}.{OUT_FORMAT} -f h264 -codec copy pipe:1|ffplay -i pipe:0
+
+ffmpeg -y -i \"udp://{ADDRESS}?overrun_nonfatal=1&fifo_size=50000000\" -s {OUT_RESOLUTION} -c:v libx264 {OUT_NAME}.{OUT_FORMAT} -c copy -f mpegts pipe:1|ffplay -i pipe:0
+
+ffprobe -loglevel error -select_streams v:0 -show_entries packet=pts_time,flags -of csv=print_section=0 video.mp4
+
+ffprobe -select_streams v -show_entries frame=pts_time -of csv=p=0 -skip_frame nokey -i video.mp4 > keyframes.txt
+
+ffprobe -v error -select_streams v:0 -count_packets -show_entries stream=nb_read_packets -of csv=p=0 tmp.mp4
+
+ffprobe -select_streams v -show_frames -show_entries frame=pict_type -of csv tmp.mp4 | grep -n I | cut -d ':' -f 1

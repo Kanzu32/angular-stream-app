@@ -1,0 +1,30 @@
+<div class="left">
+    <form [formGroup]="cropForm" (ngSubmit)="handleCrop()">
+        <div class="video-window">
+            <app-video></app-video>
+        </div>
+        <div class="crop-box">
+            <div class="checkbox-section">
+                <input type="checkbox" class="checkbox" id="section-button" formControlName="sectionMode" unchecked />
+                <label for="section-button">Cut first section</label>
+            </div>
+            <div class="time-section">
+                <input type="text" placeholder="00:00:00.000" formControlName="begin" [attr.disabled]="cropForm.value.sectionMode ? true : null"> 
+                <input type="text" placeholder="00:00:00.000" formControlName="end" [attr.disabled]="cropForm.value.sectionMode ? true : null">
+            </div>
+            <button class="main-button" id="crop-button" type="submit" [disabled]="!cropForm.valid && cropForm.value.sectionMode == false">CROP</button>
+        </div>
+    </form>
+</div>
+
+<div class="right">
+    <div class="file-box">
+        <button class="main-button" id="list-files-button" (click)="handleLoadFiles()">LIST FILES</button>
+        <div class="separator"></div>
+        <input type="text" placeholder="video.mp4" [formControl]="fileName"/>
+        <div class="separator"></div>
+        <button class="main-button" type="button" id="load-video-button" (click)="handleLoadVideo()" [disabled]="!fileName.valid">LOAD VIDEO</button>
+        <a class="main-button" type="button" [href]="downloadLink" target="_blank" rel="noopener noreferrer">DOWNLOAD</a>
+    </div>
+    <textarea readonly>{{ filesList }}</textarea>
+</div>
