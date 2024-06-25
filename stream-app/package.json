@@ -20,6 +20,7 @@
     "@angular/router": "^18.0.0",
     "@videogular/ngx-videogular": "^8.0.0",
     "dashjs": "^4.7.4",
+    "mpegts.js": "^1.7.3",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.3"
