@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { VgBufferingModule } from '@videogular/ngx-videogular/buffering';
 import { VgControlsModule } from '@videogular/ngx-videogular/controls';
 import { VgApiService, VgCoreModule } from '@videogular/ngx-videogular/core';
@@ -13,23 +14,19 @@ import { VgStreamingModule } from '@videogular/ngx-videogular/streaming';
   styleUrl: './stream.component.scss'
 })
 export class StreamComponent {
-    preload: string = 'auto';
     api: VgApiService;
     streamSource: string = "http://127.0.0.1:5000/live.mpd";
+    src: string;
 
-    restart() {
-        this.api.pause();
-        this.api.getDefaultMedia().currentTime = 0;
-    }
+    constructor (private router: Router) {}
 
     onPlayerReady(api: VgApiService) {
         this.api = api;
+        this.api.getMasterMedia().subscriptions.rateChange.subscribe(() => {this.api.playbackRate = 1});
+    }
+
+    reload() {
+        window.location.reload();
         
-        this.api.getDefaultMedia().subscriptions.ended.subscribe(
-            () => {
-                // Set the video to the beginning
-                this.api.getDefaultMedia().currentTime = 0;
-            }
-        );
     }
 }

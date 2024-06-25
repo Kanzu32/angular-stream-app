@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import Mpegts from 'mpegts.js';
 
 @Component({
@@ -8,22 +8,48 @@ import Mpegts from 'mpegts.js';
   templateUrl: './video.component.html',
   styleUrl: './video.component.scss'
 })
-export class VideoComponent {
-    @ViewChild("videoElement") videoElement: ElementRef
-    videoSource = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
 
-    constructor() {}
+// http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4
+
+// http://localhost:5000/download/video.ts
+
+export class VideoComponent {
+    @ViewChild("videoElement") videoElement: ElementRef;
+    @Input() isStream: boolean;
+    videoSource = "";
+    format: string;
 
     player: Mpegts.Player;
 
-    // ngAfterViewInit() {
-    //     this.player = Mpegts.createPlayer({
-    //         type: 'mpegts',  // could also be mpegts, m2ts, flv
-    //         isLive: false,
-    //         url: this.videoSource,
-    //     });
-    //     this.player.attachMediaElement(this.videoElement.nativeElement);
-    //     this.player.load();
-    //     this.player.play();
-    // }
+    constructor() {
+        this.player = Mpegts.createPlayer({
+            type: 'mpegts',  // could also be mpegts, m2ts, flv
+            isLive: false,
+            url: this.videoSource,
+            withCredentials: false,
+        });
+    }
+
+    changeSource(videoSource: string) {
+        this.player.unload();
+
+        console.log(this.isStream);
+        console.log("VIDEO link", videoSource);
+
+        this.format = videoSource.split(".").slice(-1)[0];
+        this.videoSource = videoSource;
+        
+        // this.videoElement.nativeElement.currentTime = 0;
+        if (this.format == "ts") {
+            console.log("VIDEO TS");
+            this.player = Mpegts.createPlayer({
+                type: 'mpegts',  // could also be mpegts, m2ts, flv
+                isLive: this.isStream,
+                url: this.videoSource,
+                withCredentials: false,
+            });
+            this.player.attachMediaElement(this.videoElement.nativeElement);
+            this.player.load();
+        }
+    }
 }

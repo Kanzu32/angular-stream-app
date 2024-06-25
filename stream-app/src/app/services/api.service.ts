@@ -38,4 +38,11 @@ export class ApiService {
     getFilesList(){
         return this.httpClient.get("http://localhost:5000/files", {responseType: 'text'});
     }
+
+    loadVideoResource(source: string) {
+        return this.httpClient.get(source, {responseType: 'blob'}).subscribe(data => {
+            console.log(data);
+            return data;
+        });
+    }
 }

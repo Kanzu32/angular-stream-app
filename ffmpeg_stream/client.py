@@ -11,12 +11,13 @@ class Mode(Enum):
 
 
 class StreamFormat(Enum):
-    MPEGTS = 1
+    MPEGTS_UDP = 1
     MPEG1VIDEO = 2
     MPEG2VIDEO = 3
     XVID = 4
     HTTP = 6
     DASH = 7
+    MPEGTS_HTTP = 8
 
 
 def modes_print():
@@ -44,7 +45,7 @@ def host():
 
     stream_formats_print()
     stream_format = StreamFormat(int(input("format: ")))
-    if stream_format == StreamFormat.MPEGTS:
+    if stream_format == StreamFormat.MPEGTS_UDP:
         os.system(f"ffmpeg -re -i {file_path} -c:v libx264 -preset ultrafast -tune zerolatency -f mpegts udp://{address}")
     elif stream_format == StreamFormat.MPEG1VIDEO:
         os.system(f"ffmpeg -re -i {file_path} -c:v mpeg1video -q:v 1 -q:a 1 -f mpeg1video udp://{address}")
@@ -57,6 +58,8 @@ def host():
     elif stream_format == StreamFormat.DASH:
         os.system(
             f"ffmpeg -re -y -i {file_path} -c:v libx264 -f dash -seg_duration 1 -streaming 1 -window_size 30 -remove_at_exit 1 live.mpd")
+    if stream_format == StreamFormat.MPEGTS_HTTP:
+        os.system(f"ffmpeg -re -i {file_path} -c:v libx264 -preset ultrafast -tune zerolatency -f mpegts http://{address}")
     else:
         print("unknown format")
 
@@ -64,19 +67,20 @@ def host():
 def read_stream():
     address = "127.0.0.1:1234"
     out_name = "video"
-    out_format = "mp4"
-    out_resolution = "1440x1080"
-    fix_first_keyframe = True  # false если идёт захват начала стрима
-    os.system(f"ffmpeg -y -i \"udp://{address}?overrun_nonfatal=1&fifo_size=50000000\" -s {out_resolution} -c:v libx264 tmp.{out_format} -c:v copy -f mpegts pipe:1|ffplay -i -x 500 pipe:0")
-    os.system(f"ffprobe -select_streams v -show_entries frame=pts_time -of csv=p=0 -skip_frame nokey -i tmp.{out_format} > keyframes.txt")
-    timestamp = 0
-    if fix_first_keyframe:
-        file = open("keyframes.txt", "r")
-        file.readline()
-        timestamp = float(file.readline())
-        file.close()
+    out_format = "ts"
+    out_resolution = "720x1280"
+    fix_first_keyframe = False  # false если идёт захват начала стрима
+    os.system(f"ffmpeg -y -i \"udp://{address}?overrun_nonfatal=1&fifo_size=50000000\" -s {out_resolution} -c copy stream.ts")
+    #os.system(f"ffmpeg -y -i \"udp://{address}?overrun_nonfatal=1&fifo_size=50000000\" -s {out_resolution} -c:v libx264 tmp.{out_format} -c:v copy -f mpegts pipe:1|ffplay -i -x 500 pipe:0")
+    #os.system(f"ffprobe -select_streams v -show_entries frame=pts_time -of csv=p=0 -skip_frame nokey -i tmp.{out_format} > keyframes.txt")
+    # timestamp = 0
+    # if fix_first_keyframe:
+    #     file = open("keyframes.txt", "r")
+    #     file.readline()
+    #     timestamp = float(file.readline())
+    #     file.close()
 
-    os.system(f"ffmpeg -y -ss {timestamp} -i tmp.{out_format} -c:v libx264 -force_key_frames source -x264-params keyint=25:scenecut=0 {out_name}.{out_format}")
+    #os.system(f"ffmpeg -y -ss {timestamp} -i tmp.{out_format} -c:v libx264 -force_key_frames source -x264-params keyint=25:scenecut=0 {out_name}.{out_format}")
     print("read finished.")
 
 

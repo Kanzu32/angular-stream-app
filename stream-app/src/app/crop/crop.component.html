@@ -1,7 +1,7 @@
 <div class="left">
     <form [formGroup]="cropForm" (ngSubmit)="handleCrop()">
         <div class="video-window">
-            <app-video></app-video>
+            <app-video [isStream]="false"></app-video>
         </div>
         <div class="crop-box">
             <div class="checkbox-section">

@@ -1,14 +1,14 @@
 import { Component, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ApiService } from '../services/api.service';
+import { VideoComponent } from '../video/video.component';
 import { StreamComponent } from '../stream/stream.component';
-import { VgStreamingModule } from '@videogular/ngx-videogular/streaming';
 
 
 @Component({
   selector: 'app-read',
   standalone: true,
-  imports: [ReactiveFormsModule, StreamComponent, VgStreamingModule],
+  imports: [ReactiveFormsModule, StreamComponent],
   templateUrl: './read.component.html',
   styleUrl: './read.component.scss'
 })
@@ -33,13 +33,18 @@ export class ReadComponent {
             this.readForm.value.resolution ?? "720x1280",)
         .subscribe({
             next: () => {
-                this.childStreamComponent.restart();
+                // this.childStreamComponent.changeSource("http://localhost:5000/live.ts")
                 console.log("OK");
             },
             error: (error) => {
                 console.log(error);
             },
         }); 
+    }
+    
+    reload() {
+        console.log("RELOAD");
+        this.childStreamComponent.reload();
     }
 
     endRecord() {

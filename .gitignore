@@ -6,3 +6,4 @@
 /ffmpeg_stream/ffmpeg
 *.m4s
 *.tmp
+ffmpeg_stream/keyframes.txt
