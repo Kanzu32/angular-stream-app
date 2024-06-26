@@ -18,6 +18,7 @@ export class VideoComponent {
     @Input() isStream: boolean;
     videoSource = "";
     format: string;
+    isDragging: boolean;
 
     player: Mpegts.Player;
 
@@ -28,6 +29,25 @@ export class VideoComponent {
             url: this.videoSource,
             withCredentials: false,
         });
+
+        // this.videoElement.nativeElement
+    }
+
+    makeMarker() {
+        
+        console.log('START');
+        this.isDragging = true;
+    }
+
+    endSeek() {
+        console.log('STOP');
+        this.isDragging = false;
+    }
+
+    timeChanged() {
+        if (this.isDragging) {
+            console.log('Dragging timeline');
+        }
     }
 
     changeSource(videoSource: string) {

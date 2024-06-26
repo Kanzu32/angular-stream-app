@@ -11,9 +11,12 @@ import { ApiService } from '../services/api.service';
   styleUrls: ['./crop.component.scss']
 })
 export class CropComponent {
-    filesList = ""
-    videoSource = ""
-    currentFileName = ""
+    filesList = "";
+    videoSource = "";
+    currentFileName = "";
+    beginMarker = 0;
+    endMarker = 0;
+    isEndMarker = false;
 
     @ViewChild(VideoComponent) childVideoComponent:VideoComponent;
 
@@ -29,6 +32,26 @@ export class CropComponent {
 
     fileName = new FormControl("", Validators.pattern(/.+\.(mp4|mkv|ts)$/));
 
+    setMarker() {
+        console.log("MARKER");
+        if (this.isEndMarker) {
+            this.endMarker = this.childVideoComponent.videoElement.nativeElement.currentTime;
+            if (this.endMarker < this.beginMarker) {
+                let tmp = this.beginMarker;
+                this.beginMarker = this.endMarker;
+                this.endMarker = tmp;
+            }
+
+            this.cropForm.controls.begin.setValue(new Date(this.beginMarker * 1000).toISOString().slice(11, 23));
+            this.cropForm.controls.end.setValue(new Date(this.endMarker * 1000).toISOString().slice(11, 23));
+            this.isEndMarker = false;
+        } else {
+            this.beginMarker = this.childVideoComponent.videoElement.nativeElement.currentTime;
+            this.cropForm.controls.begin.setValue(new Date(this.beginMarker * 1000).toISOString().slice(11, 23));
+            this.cropForm.controls.end.setValue("00:00:00.000");
+            this.isEndMarker = true;
+        }
+    }
 
     handleCrop() {
         this.apiService.postCropOptions(

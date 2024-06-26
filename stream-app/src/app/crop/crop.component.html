@@ -12,6 +12,7 @@
                 <input type="text" placeholder="00:00:00.000" formControlName="begin" [attr.disabled]="cropForm.value.sectionMode ? true : null"> 
                 <input type="text" placeholder="00:00:00.000" formControlName="end" [attr.disabled]="cropForm.value.sectionMode ? true : null">
             </div>
+            <button class="main-button" (click)="setMarker()" type="button">MARKER</button>
             <button class="main-button" id="crop-button" type="submit" [disabled]="!cropForm.valid && cropForm.value.sectionMode == false">CROP</button>
         </div>
     </form>
