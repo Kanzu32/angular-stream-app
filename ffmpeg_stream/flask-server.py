@@ -95,11 +95,42 @@ def video(filename):
 def video_recorded(filename):
     try:
         file_path = os.path.join(root, "recorded", filename)
+        file_extension = file_path.split(".")[-1]
+        print(file_path)
+        if os.path.isfile(file_path):
+            if file_extension == "avi" or file_extension == "mkv":
+                os.system(f"ffmpeg -y -i ./recorded/{filename} -codec copy ./recorded/{filename}.mp4")
+                return send_file(file_path + ".mp4", as_attachment=True)
+            else:
+                return send_file(file_path, as_attachment=True)
+        else:
+            return make_response(f"File '{filename}' not found.", 404)
+    except Exception as e:
+        return make_response(f"Error: {str(e)}", 500)
+
+
+@app.route('/download/<string:filename>', methods=['GET'])
+def video_download(filename):
+    try:
+        file_path = os.path.join(root, "recorded", filename)
         print(file_path)
         if os.path.isfile(file_path):
             return send_file(file_path, as_attachment=True)
         else:
             return make_response(f"File '{filename}' not found.", 404)
+    except Exception as e:
+        return make_response(f"Error: {str(e)}", 500)
+
+
+@app.route('/download', methods=['GET'])
+def video_download_default():
+    try:
+        file_path = os.path.join(root, "recorded", "video.mp4")
+        print(file_path)
+        if os.path.isfile(file_path):
+            return send_file(file_path, as_attachment=True)
+        else:
+            return make_response(f"File video.mp4 not found.", 404)
     except Exception as e:
         return make_response(f"Error: {str(e)}", 500)
 

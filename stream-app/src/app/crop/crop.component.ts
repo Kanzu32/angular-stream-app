@@ -13,6 +13,7 @@ import { ApiService } from '../services/api.service';
 export class CropComponent {
     filesList = "";
     videoSource = "";
+    downloadSource = "";
     currentFileName = "";
     beginMarker = 0;
     endMarker = 0;
@@ -30,7 +31,7 @@ export class CropComponent {
         end: new FormControl('00:00:00.000', [Validators.required, Validators.pattern(/^([0-1][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]).\d\d\d/)]),
     });
 
-    fileName = new FormControl("", Validators.pattern(/.+\.(mp4|mkv|ts)$/));
+    fileName = new FormControl("", Validators.pattern(/.+\.(mp4|mkv|ts|avi)$/));
 
     setMarker() {
         console.log("MARKER");
@@ -72,6 +73,7 @@ export class CropComponent {
         this.currentFileName = this.fileName.value ?? "video.mp4";
         
         this.videoSource = "http://127.0.0.1:5000/recorded/" + this.currentFileName;
+        this.downloadSource = "http://127.0.0.1:5000/download/" + this.currentFileName;
         console.log("LOAD: ", this.videoSource);
         this.childVideoComponent.changeSource(this.videoSource);
         console.log("Video Source: ", this.videoSource);
