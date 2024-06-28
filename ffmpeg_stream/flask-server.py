@@ -1,10 +1,10 @@
 import subprocess
-
 from flask import Flask, make_response, send_file, request
 from flask_cors import CORS
 import os
 from os.path import dirname, abspath
 
+# Добавляем ffmpeg в PATH, инициализируем нужные объекты
 root = abspath(dirname(__file__))
 os.environ["PATH"] = os.path.join(root, "ffmpeg", "bin")
 print(root)
@@ -15,11 +15,13 @@ CORS(app)
 record_process = subprocess.Popen(["ffmpeg", "-version"])
 
 
+# Корневой путь для теста работоспособности сервера
 @app.route("/")
 def hello_world():
     return "<p>Flask server!💀💀💀</p>"
 
 
+# Путь для старта записи стрима
 @app.route("/read/start", methods=['POST'])
 def record_start():
     global record_process
@@ -38,11 +40,10 @@ def record_start():
                                        "-streaming", "1", "-window_size", "30", "-remove_at_exit", "1", "live.mpd"],
                                       creationflags=subprocess.CREATE_NEW_PROCESS_GROUP, stdin=subprocess.PIPE,)
 
-    #os.system(f"ffmpeg -y -i \"udp://{address}?overrun_nonfatal=1&fifo_size=50000000\" -s {out_resolution} -c:v libx264 {name}.{out_format} -c:v copy -f mpegts pipe:1|ffplay -i -x 500 pipe:0")
-
     return "<p>Flask server!💀💀💀</p>"
 
 
+# Путь для остановки записи стрима
 @app.route("/read/stop", methods=['POST'])
 def record_stop():
     global record_process
@@ -52,6 +53,7 @@ def record_stop():
     return "<p>Flask server!💀💀💀</p>"
 
 
+# Путь для обрезки видео
 @app.route("/crop", methods=['POST'])
 def crop_post():
     options = request.json
@@ -68,29 +70,31 @@ def crop_post():
         timestamp = float(file.readline())
         file.close()
         os.system(f"ffmpeg -y -ss {timestamp} -i ./recorded/{in_file} -c:v libx264 -pix_fmt yuv420p -force_key_frames source -x264-params keyint=25:scenecut=0 ./recorded/fixed.{extension}")
-        file_path = os.path.join(root, "recorded", "fixed.mp4")
+        file_path = os.path.join(root, "recorded", f"fixed.{extension}")
     else:
         begin = options["begin"]
         end = options["end"]
         os.system(f"ffmpeg -y -i ./recorded/{in_file} -vcodec libx264 -pix_fmt yuv420p -force_key_frames source -x264-params keyint=25:scenecut=0 -ss {begin} -to {end} ./recorded/crop.{extension}")
-        file_path = os.path.join(root, "recorded", "crop.mp4")
+        file_path = os.path.join(root, "recorded", f"crop.{extension}")
 
     return send_file(file_path, as_attachment=True)
 
 
-@app.route('/input/<string:filename>', methods=['GET'])
-def video(filename):
-    try:
-        file_path = os.path.join(root, "input", filename)
-        print(file_path)
-        if os.path.isfile(file_path):
-            return send_file(file_path, as_attachment=True)
-        else:
-            return make_response(f"File '{filename}' not found.", 404)
-    except Exception as e:
-        return make_response(f"Error: {str(e)}", 500)
+# Путь для получения файлов
+# @app.route('/input/<string:filename>', methods=['GET'])
+# def video(filename):
+#     try:
+#         file_path = os.path.join(root, "input", filename)
+#         print(file_path)
+#         if os.path.isfile(file_path):
+#             return send_file(file_path, as_attachment=True)
+#         else:
+#             return make_response(f"File '{filename}' not found.", 404)
+#     except Exception as e:
+#         return make_response(f"Error: {str(e)}", 500)
 
 
+# Путь для получения записанных стримов и обрезанных ыидео
 @app.route('/recorded/<string:filename>', methods=['GET'])
 def video_recorded(filename):
     try:
@@ -109,45 +113,25 @@ def video_recorded(filename):
         return make_response(f"Error: {str(e)}", 500)
 
 
+# Путь для скачки видео (т.к. клиенту отсылается mp4 файл вместо mkv и avi, а скачать необходимо первоисточник).
 @app.route('/download/<string:filename>', methods=['GET'])
 def video_download(filename):
-    try:
-        file_path = os.path.join(root, "recorded", filename)
-        print(file_path)
-        if os.path.isfile(file_path):
-            return send_file(file_path, as_attachment=True)
-        else:
-            return make_response(f"File '{filename}' not found.", 404)
-    except Exception as e:
-        return make_response(f"Error: {str(e)}", 500)
+    return get_recorded_file(filename)
 
 
+# Путь для загрузки файла по умолчанию
 @app.route('/download', methods=['GET'])
 def video_download_default():
-    try:
-        file_path = os.path.join(root, "recorded", "video.mp4")
-        print(file_path)
-        if os.path.isfile(file_path):
-            return send_file(file_path, as_attachment=True)
-        else:
-            return make_response(f"File video.mp4 not found.", 404)
-    except Exception as e:
-        return make_response(f"Error: {str(e)}", 500)
+    return get_recorded_file("video.mp4")
 
 
+# Путь для получения загруженного стрима по умолчанию
 @app.route('/recorded/', methods=['GET'])
 def video_recorded_default():
-    try:
-        file_path = os.path.join(root, "recorded", "video.mp4")
-        print(file_path)
-        if os.path.isfile(file_path):
-            return send_file(file_path, as_attachment=True)
-        else:
-            return make_response(f"File video.mp4 not found.", 404)
-    except Exception as e:
-        return make_response(f"Error: {str(e)}", 500)
+    return get_recorded_file("video.mp4")
 
 
+# Путь для ретранслирования стрима на клиент по протоколу DASH
 @app.route('/<string:filename>', methods=['GET'])
 def stream(filename):
     try:
@@ -161,6 +145,7 @@ def stream(filename):
         return make_response(f"Error: {str(e)}", 500)
 
 
+# Путь для получения списка файлов в папке recorded
 @app.route('/files', methods=['GET'])
 def list_files():
     try:
@@ -169,6 +154,19 @@ def list_files():
         response = make_response(files_list, 200)
         response.mimetype = "text/plain"
         return response
+    except Exception as e:
+        return make_response(f"Error: {str(e)}", 500)
+
+
+# Получение видео из папки records
+def get_recorded_file(filename):
+    try:
+        file_path = os.path.join(root, "recorded", filename)
+        print(file_path)
+        if os.path.isfile(file_path):
+            return send_file(file_path, as_attachment=True)
+        else:
+            return make_response(f"File {filename} not found.", 404)
     except Exception as e:
         return make_response(f"Error: {str(e)}", 500)
 

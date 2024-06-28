@@ -1,7 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ApiService } from '../services/api.service';
-import { VideoComponent } from '../video/video.component';
 import { StreamComponent } from '../stream/stream.component';
 
 
@@ -15,8 +14,10 @@ import { StreamComponent } from '../stream/stream.component';
 export class ReadComponent {
     constructor(private apiService: ApiService) {}
 
+    // Компонент плеера стрима
     @ViewChild(StreamComponent) childStreamComponent:StreamComponent;
 
+    // Форма для конфигурации записи стрима
     readForm = new FormGroup({
         address: new FormControl('127.0.0.1:1234', [Validators.required,
             Validators.pattern(/\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):\d{1,5}\b/)]),
@@ -25,6 +26,7 @@ export class ReadComponent {
         resolution: new FormControl('720x1280', [Validators.required, Validators.pattern(/\d+x\d+/)]),
     });
           
+    // Обработчик отправки формы (начала записи)
     handleSubmit() {
         this.apiService.postReadStart(
             this.readForm.value.address ?? "127.0.0.1:1234",
@@ -42,11 +44,13 @@ export class ReadComponent {
         }); 
     }
     
+    // Обработчик кнопки перезагрузки плеера
     reload() {
         console.log("RELOAD");
         this.childStreamComponent.reload();
     }
 
+    // Обрабочик кнопки завершения записи
     endRecord() {
         this.apiService.postReadStop();
     }
