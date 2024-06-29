@@ -40,7 +40,7 @@ def record_start():
                                        "-streaming", "1", "-window_size", "30", "-remove_at_exit", "1", "live.mpd"],
                                       creationflags=subprocess.CREATE_NEW_PROCESS_GROUP, stdin=subprocess.PIPE,)
 
-    return "<p>Flask server!💀💀💀</p>"
+    return "Record started"
 
 
 # Путь для остановки записи стрима
@@ -50,7 +50,7 @@ def record_stop():
 
     record_process.communicate(b'q', 2000)
 
-    return "<p>Flask server!💀💀💀</p>"
+    return "Record stopped"
 
 
 # Путь для обрезки видео
