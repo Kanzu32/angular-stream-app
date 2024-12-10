@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import Mpegts from 'mpegts.js';
 
 @Component({
@@ -15,7 +15,6 @@ import Mpegts from 'mpegts.js';
 
 export class VideoComponent {
     @ViewChild("videoElement") videoElement: ElementRef;
-    @Input() isStream: boolean;
     videoSource = "";
     format: string;
     isDragging: boolean;
@@ -29,42 +28,23 @@ export class VideoComponent {
             url: this.videoSource,
             withCredentials: false,
         });
-
-        // this.videoElement.nativeElement
     }
 
-    makeMarker() {
-        
-        console.log('START');
-        this.isDragging = true;
-    }
-
-    endSeek() {
-        console.log('STOP');
-        this.isDragging = false;
-    }
-
-    timeChanged() {
-        if (this.isDragging) {
-            console.log('Dragging timeline');
-        }
-    }
-
+    // Изменение видео для загрузки в плеер
     changeSource(videoSource: string) {
         this.player.unload();
-
-        console.log(this.isStream);
         console.log("VIDEO link", videoSource);
 
         this.format = videoSource.split(".").slice(-1)[0];
         this.videoSource = videoSource;
         
         // this.videoElement.nativeElement.currentTime = 0;
+        // .ts файлы обрабатываются отдельно
         if (this.format == "ts") {
             console.log("VIDEO TS");
             this.player = Mpegts.createPlayer({
                 type: 'mpegts',  // could also be mpegts, m2ts, flv
-                isLive: this.isStream,
+                isLive: false,
                 url: this.videoSource,
                 withCredentials: false,
             });

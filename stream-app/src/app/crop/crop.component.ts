@@ -2,6 +2,7 @@ import { Component, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { VideoComponent } from '../video/video.component';
 import { ApiService } from '../services/api.service';
+import * as config from '../../assets/config.json'
 
 @Component({
   selector: 'app-crop',
@@ -13,14 +14,18 @@ import { ApiService } from '../services/api.service';
 export class CropComponent {
     filesList = "";
     videoSource = "";
+    downloadSource = "";
     currentFileName = "";
     beginMarker = 0;
     endMarker = 0;
     isEndMarker = false;
 
+    // Компонент плеера видео
     @ViewChild(VideoComponent) childVideoComponent:VideoComponent;
 
     constructor(private apiService: ApiService) {}
+
+    // Форма параметров обрезки видео
     cropForm = new FormGroup({
         sectionMode: new FormControl(false, {
             nonNullable: true,
@@ -30,8 +35,10 @@ export class CropComponent {
         end: new FormControl('00:00:00.000', [Validators.required, Validators.pattern(/^([0-1][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]).\d\d\d/)]),
     });
 
-    fileName = new FormControl("", Validators.pattern(/.+\.(mp4|mkv|ts)$/));
+    // Отдельный валидатор названия файла
+    fileName = new FormControl("", Validators.pattern(/.+\.(mp4|mkv|ts|avi)$/));
 
+    // Обработчик кнопки установки маркера для обрезки видео
     setMarker() {
         console.log("MARKER");
         if (this.isEndMarker) {
@@ -53,6 +60,7 @@ export class CropComponent {
         }
     }
 
+    // Обработчик отправки формы обрезки видео
     handleCrop() {
         this.apiService.postCropOptions(
             this.cropForm.value.sectionMode ?? true,
@@ -61,6 +69,7 @@ export class CropComponent {
             this.currentFileName);
     }
 
+    // Обработчик кнопки загрузки списка файлов
     handleLoadFiles() {
         this.apiService.getFilesList().subscribe(data => {
             this.filesList = data;
@@ -68,10 +77,12 @@ export class CropComponent {
         });
     }
 
+    // Обработчик кнопки загрузки видео в плеер
     handleLoadVideo() {
         this.currentFileName = this.fileName.value ?? "video.mp4";
         
-        this.videoSource = "http://127.0.0.1:5000/recorded/" + this.currentFileName;
+        this.videoSource = config.serverBaseUrl + "/recorded/" + this.currentFileName;
+        this.downloadSource = config.serverBaseUrl + "/download/" + this.currentFileName;
         console.log("LOAD: ", this.videoSource);
         this.childVideoComponent.changeSource(this.videoSource);
         console.log("Video Source: ", this.videoSource);

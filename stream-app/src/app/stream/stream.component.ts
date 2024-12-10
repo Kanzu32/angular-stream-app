@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
 import { VgBufferingModule } from '@videogular/ngx-videogular/buffering';
 import { VgControlsModule } from '@videogular/ngx-videogular/controls';
 import { VgApiService, VgCoreModule } from '@videogular/ngx-videogular/core';
 import { VgOverlayPlayModule } from '@videogular/ngx-videogular/overlay-play';
 import { VgStreamingModule } from '@videogular/ngx-videogular/streaming';
+import * as config from '../../assets/config.json'
 
 @Component({
   selector: 'app-stream',
@@ -15,16 +15,16 @@ import { VgStreamingModule } from '@videogular/ngx-videogular/streaming';
 })
 export class StreamComponent {
     api: VgApiService;
-    streamSource: string = "http://127.0.0.1:5000/live.mpd";
+    streamSource: string = config.serverBaseUrl + "/live.mpd";
     src: string;
 
-    constructor (private router: Router) {}
-
+    // по готовности плеера зафикситовать скорость проигрования на x1 
     onPlayerReady(api: VgApiService) {
         this.api = api;
         this.api.getMasterMedia().subscriptions.rateChange.subscribe(() => {this.api.playbackRate = 1});
     }
 
+    // перезагрузка страницы для обновления плеера
     reload() {
         window.location.reload();
         

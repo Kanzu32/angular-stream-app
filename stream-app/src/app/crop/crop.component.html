@@ -1,7 +1,7 @@
 <div class="left">
     <form [formGroup]="cropForm" (ngSubmit)="handleCrop()">
         <div class="video-window">
-            <app-video [isStream]="false"></app-video>
+            <app-video></app-video>
         </div>
         <div class="crop-box">
             <div class="checkbox-section">
@@ -25,7 +25,7 @@
         <input type="text" placeholder="video.mp4" [formControl]="fileName"/>
         <div class="separator"></div>
         <button class="main-button" type="button" id="load-video-button" (click)="handleLoadVideo()" [disabled]="!fileName.valid">LOAD VIDEO</button>
-        <a class="main-button" type="button" [href]="videoSource" target="_blank" rel="noopener noreferrer">DOWNLOAD</a>
+        <a class="main-button" type="button" [href]="downloadSource" target="_blank" rel="noopener noreferrer">DOWNLOAD</a>
     </div>
     <textarea readonly>{{ filesList }}</textarea>
 </div>
